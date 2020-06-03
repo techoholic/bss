@@ -1,6 +1,5 @@
 import keyboard
 import time
-import math
 print("Welcome to the Ultimate Bee Swarm Simulator Script v1.0!")
 time.sleep(0.5)
 print("Waiting for 5 seconds...")
