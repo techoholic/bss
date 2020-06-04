@@ -6,7 +6,7 @@ print("Recording session started. Press ` to stop")
 movSeq = keyboard.record(until='`')
 print("Recording session ended. What do you want to do now?")
 option = ''
-while (option = ''):
+while (option == ''):
     print("p. Playback you recording")
     print("s. Save the recording as a file to be accessed later")
     print("x. Delete the recording")
