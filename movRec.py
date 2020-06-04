@@ -23,6 +23,17 @@ while (working):
     print("`. Discard your recording and start a new one")
     option = input("Type p, s, x, or ` (tilde) and then press enter: ")
     if (option == '``p' or option == 'p'):
+        print("Playing the movSeq in 5")
+        time.sleep(1)
+        print("4")
+        time.sleep(1)
+        print("3")
+        time.sleep(1)
+        print("2")
+        time.sleep(1)
+        print("1")
+        time.sleep(1)
+        print("Playing movement sequence")
         keyboard.play(movSeq)
     elif (option == '``s' or option == 's'):
         name = input("What do you want to name this movSeq? ")
