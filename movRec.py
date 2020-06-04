@@ -26,7 +26,7 @@ while (working):
         keyboard.play(movSeq)
     elif (option == '``s' or option == 's'):
         name = input("What do you want to name this movSeq? ")
-        file = open("local/movSeqs/" + name + ".movseq", "w")
+        file = open("local/movSeqs/" + name, "w")
         file.writelines(str(movSeq))
         file.close()
     elif (option == '```' or option == '`'):
