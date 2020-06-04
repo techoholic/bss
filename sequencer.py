@@ -1,6 +1,6 @@
 import keyboard
 import time
-print("Welcome to version 1.0 the Sequencer! This script can record, playback, and most importantly, sequence\n keypress recordings (called movement sequences aka movSeqs).")
+print("Welcome to version 1.1 of the Sequencer! This script can record, playback, and most importantly, sequence\n keypress recordings (called movement sequences aka movSeqs).")
 while True:
     print("\na. Record new movSeq")
     print("b. Playback a recorded movSeq")
@@ -33,7 +33,9 @@ while True:
             print("l. Return to main menu")
             option = input("Type i, j, k, or l and then press enter: ")
             if (option == '`i' or option == 'i'):
-                print("\nPlaying the movSeq in 5")
+                loop = input("\nDo you want to play the recording on loop? (y/n): ")
+                running = True
+                print("Playing the movSeq in 5")
                 time.sleep(1)
                 print("4")
                 time.sleep(1)
@@ -44,7 +46,10 @@ while True:
                 print("1")
                 time.sleep(1)
                 print("Playing movement sequence")
-                keyboard.play(movSeq)
+                while (running):
+                    if (option == 'n'):
+                        running = False
+                    keyboard.play(movSeq)
             elif (option == '`j' or option == 'j'):
                 name = input("What do you want to name this movSeq?: ")
                 file = open("local/movSeqs/" + name, "w")
