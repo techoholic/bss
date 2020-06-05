@@ -1,7 +1,7 @@
 import keyboard
 import time
 import os
-print("Welcome to version 1.1 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
+print("Welcome to version 1.5 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
     print("b. Playback a recorded PKR")
