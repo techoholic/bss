@@ -48,16 +48,15 @@ while True:
                 time.sleep(1)
                 print("Playing recording")
                 while (running):
-                    if (option == 'n'):
+                    if (option != 'y'):
                         running = False
                     keyboard.play(pkr)
             elif (option == '`j' or option == 'j'):
                 name = input("\nWhat do you want to name this PKR?: ")
-                file = open("local/" + name + ".pkr", "w")
                 pkrFileArray = []
                 for entry in pkr:
-                    pkrFileArray.append(str(entry))
-                    pkrFileArray.append(str(getattr(entry, "time")))
+                    pkrFileArray.append(str(getattr(entry, "event_type")) + " " + str(getattr(entry, "scan_code")) + " " + str(getattr(entry, "name")) + " " + str(getattr(entry, "time")) + " " + str(getattr(entry, "device")) + " " + str(getattr(entry, "modifiers")) + " " + str(getattr(entry, "is_keypad")))
+                file = open("local/" + name + ".pkr", "w")
                 for entry in pkrFileArray:
                     file.write(entry + "\n")
                 file.close()
@@ -78,6 +77,7 @@ while True:
     elif (option == 'b'):
         fileList = os.listdir("local/")
         i = 0
+        print("")
         for fileName in fileList:
             print(i, ". ", fileName, sep='')
             i = i + 1
@@ -87,14 +87,31 @@ while True:
         pkrFromFile = file.readlines()
         file.close()
         pkrToPlay = []
-        i = 0
-        class KeyboardEvent:
-            def __init__(self, time):
-                self.time = time
         for entry in pkrFromFile:
-            if (i%2 == 0):
-                pkrToPlay.append(entry)
-            else:
-                setattr(pkrToPlay[i-1], "time", float(entry))
-            i = i + 1
-        keyboard.play(pkrToPlay)
+            splitEntry = entry.split()
+            newEntry = keyboard.KeyboardEvent(event_type=splitEntry[0], scan_code=int(splitEntry[1]))
+            setattr(newEntry, "event_type", splitEntry[0])
+            setattr(newEntry, "scan_code", int(splitEntry[1]))
+            setattr(newEntry, "name", splitEntry[2])
+            setattr(newEntry, "time", float(splitEntry[3]))
+            #setattr(newEntry, "device", splitEntry[4])
+            #setattr(newEntry, "modifiers", splitEntry[5])
+            #setattr(newEntry, "is_keypad", bool(splitEntry[6]))
+            pkrToPlay.append(newEntry)
+        loop = input("\nDo you want to play the recording on loop? (y/n): ")
+        running = True
+        print("Playing the PKR in 5")
+        time.sleep(1)
+        print("4")
+        time.sleep(1)
+        print("3")
+        time.sleep(1)
+        print("2")
+        time.sleep(1)
+        print("1")
+        time.sleep(1)
+        print("Playing recording")
+        while (running):
+            if (option != 'y'):
+                running = False
+            keyboard.play(pkrToPlay)
