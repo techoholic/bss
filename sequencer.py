@@ -1,36 +1,18 @@
-import keyboard
-import time
-import os
-print("REMINDER: presing the tilde (`) to stop recording may type it in the input field so make sure to check for and remove it after recording!")
-print("\n***** ***** ***** ***** ***** ***** ***** *****\n")
-print("Welcome to version 2.1 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
-def recPlayCountdown():
-    time.sleep(1)
-    print("4")
-    time.sleep(1)
-    print("3")
-    time.sleep(1)
-    print("2")
-    time.sleep(1)
-    print("1")
-    time.sleep(1)
-class seqEvent:
-    def __init__(self, eventType, count, timelineText1, timelineText2, recToPlay):
-        self.eventType = eventType
-        self.count = count
-        self.timelineText1 = timelineText1
-        self.timelineText2 = timelineText2
-        self.recToPlay = recToPlay
+print("\n*!~!* created by Techoholic *!~!*\n")
+from keyboard import record, play
+import seqExt
+seqExt.dirStatus()
+print("Welcome to version 2.5 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
-    print("b. Playback a recorded PKR")
-    print("c. Sequence the PKRs (doesn't work yet!)")
+    print("b. Playback recorded PKR")
+    print("c. Sequence the PKRs")
     option = input("Type a, b, or c and press Enter: ")
     if (option == 'a'):
         print("\nRecording will start in 5")
-        recPlayCountdown()
+        seqExt.recPlayCountdown()
         print("Recording session started. Press ` in any application to stop")
-        pkr = keyboard.record(until='`')
+        pkr = record(until='`')
         print("\nRecording session ended. What do you want to do now?")
         option = ''
         firstTime = True
@@ -47,117 +29,83 @@ while True:
                 loop = input("\nDo you want to play the recording on loop? (y/n): ")
                 running = True
                 print("Playing the PKR in 5")
-                recPlayCountdown()
+                seqExt.recPlayCountdown()
                 print("Playing recording")
                 while (running):
                     if (loop != 'y'):
                         running = False
-                    keyboard.play(pkr)
-            elif (option == '`j' or option == 'j'):
-                name = input("\nWhat do you want to name this PKR?: ")
-                pkrFileArray = []
-                for entry in pkr:
-                    pkrFileArray.append(str(getattr(entry, "event_type")) + " " + str(getattr(entry, "scan_code")) + " " + str(getattr(entry, "name")) + " " + str(getattr(entry, "time")) + " " + str(getattr(entry, "device")) + " " + str(getattr(entry, "modifiers")) + " " + str(getattr(entry, "is_keypad")))
-                file = open("local/" + name + ".pkr", "w")
-                for entry in pkrFileArray:
-                    file.write(entry + "\n")
-                file.close()
-            elif (option == '`k' or option == 'k'):
+                    play(pkr)
+            elif (option == 'j'):
+                fileName = input("\nWhat do you want to name this PKR?: ")
+                seqExt.recToFile(pkr, "local/recordings/" + fileName + ".pkr")
+                print("Successfully saved recording to " + fileName + ".pkr!")
+            elif (option == 'k'):
                 print("\nRecording will start in 5")
-                recPlayCountdown()
+                seqExt.recPlayCountdown()
                 print("Recording session started. Press ` to stop")
-                movSeq = keyboard.record(until='`')
+                pkr = record(until='`')
                 print("\nRecording session ended. What do you want to do now?")
     elif (option == 'b'):
-        fileList = os.listdir("local/")
-        i = 0
-        print("")
-        for fileName in fileList:
-            print(i, ". ", fileName, sep='')
-            i = i + 1
-        fto = input("Type the number of the PKR you want to play and press Enter: ") #file to open
-        fileName = fileList[int(fto)]
-        file = open("local/"+ fileName, 'r')
-        pkrFromFile = file.readlines()
-        file.close()
-        pkrToPlay = []
-        for entry in pkrFromFile:
-            splitEntry = entry.split()
-            newEntry = keyboard.KeyboardEvent(event_type=splitEntry[0], scan_code=int(splitEntry[1]))
-            setattr(newEntry, "event_type", splitEntry[0])
-            setattr(newEntry, "scan_code", int(splitEntry[1]))
-            setattr(newEntry, "name", splitEntry[2])
-            setattr(newEntry, "time", float(splitEntry[3]))
-            setattr(newEntry, "device", splitEntry[4])
-            setattr(newEntry, "modifiers", splitEntry[5])
-            setattr(newEntry, "is_keypad", bool(splitEntry[6]))
-            pkrToPlay.append(newEntry)
+        pkrToPlay = seqExt.fileToRec()
         loop = input("\nDo you want to play the recording on loop? (y/n): ")
         running = True
         print("Playing the PKR in 5")
-        recPlayCountdown()
+        seqExt.recPlayCountdown()
         print("Playing recording")
         while (running):
             if (loop != 'y'):
                 running = False
-            keyboard.play(pkrToPlay)
+            play(pkrToPlay)
     elif (option == 'c'):
-        planning = True
         eventCount = 0
+        saveFileEventCount = 0
         eventArray = []
-        recordingArray = []
-        recordings = 0
+        noName = True
         while (option != 'z'):
             print("\nYou currently have " + str(eventCount) + " events in your program:")
             for event in eventArray:
-                print(eventCount, ". ", event.eventType, event.timelineText1, event.count, event.timelineText2, sep='')
+                print(event.explanation)
             print("\nWhat would you like to do now?")
-            print("v. Load saved program from file")
-            print("w. Add wait event")
-            print("x. Add recorded event from file")
-            print("y. Save/Execute this program in a file")
+            print("u. Load saved program from file")
+            print("v. Add wait event")
+            print("w. Add PKR from file")
+            print("x. Add code snippet")
+            print("y. Save/Execute this program")
             print("z. Return to main menu (loses progress)")
-            option = input("Type v, w, x, y, or z and press Enter: ")
-            if (option == 'v'):
+            option = input("Type u, v, w, x, y, or z and press Enter: ")
+            if (option == 'u'):
                 print("\nNothing here yet :(")
-            elif (option == 'w'):
+            elif (option == 'v'):
                 eventCount = eventCount + 1
                 secondsToWait = input("\nHow many seconds would you like the system to wait?: ")
-                waitEvent = seqEvent(eventType="Wait", count=float(secondsToWait), timelineText1=" for ", timelineText2=" seconds", recToPlay="")
-                eventArray.append(waitEvent)
+                eventArray.append(seqExt.progEvent(eventCount, float(secondsToWait), None, str(eventCount) + ". Wait " + secondsToWait + " seconds"))
                 print("Added wait event!")
-            elif (option == 'x'):
-                fileList = os.listdir("local/")
-                i = 0
-                print("")
-                for fileName in fileList:
-                    print(i, ". ", fileName, sep='')
-                    i = i + 1
-                fto = input("\nType the number of the PKR you want to add to the program and press Enter: ") #file to open
-                fileName = fileList[int(fto)]
-                file = open("local/"+ fileName, 'r')
-                pkrFromFile = file.readlines()
-                file.close()
-                pkrToPlay = []
-                for entry in pkrFromFile:
-                    splitEntry = entry.split()
-                    newEntry = keyboard.KeyboardEvent(event_type=splitEntry[0], scan_code=int(splitEntry[1]))
-                    setattr(newEntry, "event_type", splitEntry[0])
-                    setattr(newEntry, "scan_code", int(splitEntry[1]))
-                    setattr(newEntry, "name", splitEntry[2])
-                    setattr(newEntry, "time", float(splitEntry[3]))
-                    setattr(newEntry, "device", splitEntry[4])
-                    setattr(newEntry, "modifiers", splitEntry[5])
-                    setattr(newEntry, "is_keypad", bool(splitEntry[6]))
-                    pkrToPlay.append(newEntry)
-                recordingArray.append(pkrToPlay)
+            elif (option == 'w'):
+                eventCount = eventCount + 1
+                chosenFile = seqExt.chooseFile()
                 playCount = input("How many times would you like to play recording? (default is 1): ")
                 if (playCount == ''):
                     playCount = 1
-                recEvent = seqEvent(eventType="Play", timelineText1=" '"+ fileName + "' ", count=playCount, timelineText2=" time(s)", recToPlay=recordingArray[recordings])
-                recordings = recordings + 1
-                eventCount = eventCount + 1
-                eventArray.append(recEvent)
+                eventArray.append(seqExt.progEvent(eventCount, int(playCount), chosenFile, str(eventCount) + ". Play '" + chosenFile + "' " + str(playCount) + " time(s)"))
                 print("Added PKR event!")
-            elif (option == 'y'):
+            elif (option == 'x'):
                 print("Nothing here yet :(")
+            elif (option == 'y'):
+                if (saveFileEventCount != eventCount):
+                    if (noName):
+                        noName = False
+                        nameOfProgram = input("\nWhat would you like to name this program?: ")
+                        loopAmnt = input("How many times would you like to play this program? (infinite = -1): ")
+                        file = open("local/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
+                        file.write("loopAmnt=" + loopAmnt + "\n")
+                        file.close()
+                    file = open("local/" + nameOfProgram + ".ksp", "a+")
+                    for event in eventArray:
+                        file.write(str(event.id) + "/" + str(event.count) + "/" + str(event.pkrFile) + "/" + event.explanation + "\n")
+                        saveFileEventCount = saveFileEventCount + 1
+                    file.close()
+                    print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp!")
+                elif (saveFileEventCount > 0):
+                    print("\nRun the program")
+                else:
+                    print("\nNothing to save or load.")
