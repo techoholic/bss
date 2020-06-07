@@ -35,8 +35,11 @@ def chooseFile():
         i = i + 1
     fto = input("Type the number of the PKR you want and press Enter: ") #file to open
     return fileList[int(fto)]
-def fileToRec():
-    fileName = chooseFile()
+def fileToRec(pkrFileName=""):
+    if (pkrFileName):
+        fileName = pkrFileName
+    else:
+        fileName = chooseFile()
     file = open("local/recordings/"+ fileName, 'r')
     pkrFromFile = file.readlines()
     file.close()
@@ -44,8 +47,6 @@ def fileToRec():
     for entry in pkrFromFile:
         splitEntry = entry.split()
         newEntry = KeyboardEvent(event_type=splitEntry[0], scan_code=int(splitEntry[1]))
-        newEntry.event_type = splitEntry[0]
-        newEntry.scan_code = int(splitEntry[1])
         newEntry.name = splitEntry[2]
         newEntry.time = float(splitEntry[3])
         newEntry.device = splitEntry[4]

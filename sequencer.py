@@ -1,8 +1,10 @@
 print("\n*!~!* created by Techoholic *!~!*\n")
 from keyboard import record, play
+from mouse import press, release
+from time import sleep
 import seqExt
 seqExt.dirStatus()
-print("Welcome to version 2.5 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
+print("Welcome to version 2.6 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
     print("b. Playback recorded PKR")
@@ -60,11 +62,13 @@ while True:
         eventCount = 0
         saveFileEventCount = 0
         eventArray = []
+        eventArray.append(seqExt.progEvent(0, "", None, ""))
         noName = True
         while (option != 'z'):
             print("\nYou currently have " + str(eventCount) + " events in your program:")
             for event in eventArray:
-                print(event.explanation)
+                if (event.id != 0):
+                    print(event.explanation)
             print("\nWhat would you like to do now?")
             print("u. Load saved program from file")
             print("v. Add wait event")
@@ -91,21 +95,41 @@ while True:
             elif (option == 'x'):
                 print("Nothing here yet :(")
             elif (option == 'y'):
-                if (saveFileEventCount != eventCount):
-                    if (noName):
-                        noName = False
-                        nameOfProgram = input("\nWhat would you like to name this program?: ")
-                        loopAmnt = input("How many times would you like to play this program? (infinite = -1): ")
-                        file = open("local/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
-                        file.write("loopAmnt=" + loopAmnt + "\n")
-                        file.close()
-                    file = open("local/" + nameOfProgram + ".ksp", "a+")
+                if (noName and eventCount > 0):
+                    noName = False
+                    nameOfProgram = input("\nWhat would you like to name this program?: ")
+                    loopAmnt = input("How many times would you like to play this program? (infinite = -1): ")
+                    file = open("local/programs/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
+                    file.close()
+                    eventArray[0] = seqExt.progEvent(0, int(loopAmnt), None, "This is how many times to run the program (-1 is infinity)")
+                elif (saveFileEventCount-1 != eventCount):
+                    file = open("local/programs/" + nameOfProgram + ".ksp", "a+")
                     for event in eventArray:
                         file.write(str(event.id) + "/" + str(event.count) + "/" + str(event.pkrFile) + "/" + event.explanation + "\n")
                         saveFileEventCount = saveFileEventCount + 1
                     file.close()
-                    print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp!")
+                    print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp! Select this option again to play your program")
                 elif (saveFileEventCount > 0):
-                    print("\nRun the program")
+                    programIsRunning = True
+                    i = 0
+                    while (programIsRunning):
+                        for event in eventArray:
+                            if (event.id == 0 and event.count > 0):
+                                i = i + 1
+                                print("\nRunning program for time " + str(i) +"/" + str(event.count))
+                                if (event.count == i):
+                                    programIsRunning = False
+                            elif (event.pkrFile): #If the event is a recEvent
+                                running = True
+                                i2 = 0
+                                while (running):
+                                    i2 = i2 + 1
+                                    print("Playing '" + event.pkrFile + "' for time " + str(i2) + "/" + str(event.count))
+                                    if (event.count == i2):
+                                        running = False
+                                    play(seqExt.fileToRec(event.pkrFile))
+                            elif (event.id != 0):
+                                print("Waiting for " + str(event.count) + " seconds")
+                                sleep(event.count)
                 else:
                     print("\nNothing to save or load.")
