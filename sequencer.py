@@ -64,6 +64,7 @@ while True:
         eventArray = []
         eventArray.append(seqExt.progEvent(0, "", None, ""))
         noName = True
+        nameOfProgram = ""
         while (option != 'z'):
             print("\nYou currently have " + str(eventCount) + " events in your program:")
             for event in eventArray:
@@ -102,14 +103,16 @@ while True:
                     file = open("local/programs/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
                     file.close()
                     eventArray[0] = seqExt.progEvent(0, int(loopAmnt), None, "This is how many times to run the program (-1 is infinity)")
-                elif (saveFileEventCount-1 != eventCount):
+                if (saveFileEventCount-1 != eventCount and eventCount > 0):
                     file = open("local/programs/" + nameOfProgram + ".ksp", "a+")
                     for event in eventArray:
                         file.write(str(event.id) + "/" + str(event.count) + "/" + str(event.pkrFile) + "/" + event.explanation + "\n")
                         saveFileEventCount = saveFileEventCount + 1
                     file.close()
-                    print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp! Select this option again to play your program")
-                elif (saveFileEventCount > 0):
+                    print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp!")
+                if (saveFileEventCount > 0):
+                    print("Starting program in 5")
+                    seqExt.recPlayCountdown()
                     programIsRunning = True
                     i = 0
                     while (programIsRunning):
