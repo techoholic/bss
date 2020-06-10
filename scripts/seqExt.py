@@ -1,16 +1,16 @@
 from time import sleep
 from os import listdir, mkdir
 from keyboard import KeyboardEvent
-def dirStatus():
-    dirContent = listdir()
+def dirInit():
+    dirContent = listdir("../")
     localDirPresent = False
     for inode in dirContent:
         if (inode == "local"):
             localDirPresent = True
     if (localDirPresent == False):
-        mkdir("local")
-        mkdir("local/recordings")
-        mkdir("local/programs")
+        mkdir("../local")
+        mkdir("../local/recordings")
+        mkdir("../local/programs")
 def recPlayCountdown():
     sleep(1)
     print("4")
@@ -29,9 +29,9 @@ def recToFile(rec="", filePathName=""):
 def chooseFile(folder="rec"):
     print("")
     if (folder == "rec"):
-        fileList = listdir("local/recordings/")
+        fileList = listdir("../local/recordings/")
     elif (folder == "prog"):
-        fileList = listdir("local/programs")
+        fileList = listdir("../local/programs/")
     i = 0
     for fileName in fileList:
         print(i, ". ", fileName, sep='')
@@ -43,7 +43,7 @@ def fileToRec(pkrFileName=""):
         fileName = pkrFileName
     else:
         fileName = chooseFile()
-    file = open("local/recordings/"+ fileName, 'r')
+    file = open("../local/recordings/"+ fileName, 'r')
     pkrFromFile = file.readlines()
     file.close()
     pkrToPlay = []

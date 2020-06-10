@@ -3,7 +3,7 @@ from keyboard import record, play
 from mouse import press, release
 from time import sleep
 import seqExt
-seqExt.dirStatus()
+seqExt.dirInit()
 print("Welcome to version 3.0 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
@@ -39,7 +39,7 @@ while True:
                     play(pkr)
             elif (option == 'j'):
                 fileName = input("\nWhat do you want to name this PKR?: ")
-                seqExt.recToFile(pkr, "local/recordings/" + fileName + ".pkr")
+                seqExt.recToFile(pkr, "../local/recordings/" + fileName + ".pkr")
                 print("Successfully saved recording to " + fileName + ".pkr!")
             elif (option == 'k'):
                 print("\nRecording will start in 5")
@@ -66,7 +66,7 @@ while True:
             if (openSavedProgram == 'y'):
                 sfEventCount = 1
                 fileToOpen = seqExt.chooseFile("prog")
-                file = open("local/programs/" + fileToOpen, 'r')
+                file = open("../local/programs/" + fileToOpen, 'r')
                 fileAsArray = file.readlines()
                 file.close()
                 counter = 0
@@ -120,11 +120,11 @@ while True:
                         if (sfEventCount == 0):
                             nameOfProgram = input("\nWhat would you like to name this program?: ")
                             loopAmnt = input("How many times would you like to play this program? (infinite = -1): ")
-                            file = open("local/programs/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
+                            file = open("../local/programs/" + nameOfProgram + ".ksp", 'w') #keyboard sequencer program
                             file.write("loopAmnt=" + loopAmnt + "\n")
                             file.close()
                         if (eventCount != sfEventCount):
-                            file = open("local/programs/" + nameOfProgram + ".ksp", "a+")
+                            file = open("../local/programs/" + nameOfProgram + ".ksp", "a+")
                             for event in eventArray:
                                 if (event.id > sfEventCount):
                                     file.write(str(event.id) + "/" + str(event.count) + "/" + str(event.pkrFile) + "/" + event.explanation + "\n")
