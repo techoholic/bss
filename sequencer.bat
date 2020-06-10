@@ -1,2 +1,2 @@
-python sequencer.py
+python scripts/sequencer.py
 cmd /k
