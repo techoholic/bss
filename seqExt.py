@@ -26,14 +26,17 @@ def recToFile(rec="", filePathName=""):
     for event in rec:
         file.write(str(event.event_type) + " " + str(event.scan_code) + " " + str(event.name) + " " + str(event.time) + " " + str(event.device) + " " + str(event.modifiers) + " " + str(event.is_keypad) + "\n")
     file.close()
-def chooseFile():
+def chooseFile(folder="rec"):
     print("")
-    fileList = listdir("local/recordings/")
+    if (folder == "rec"):
+        fileList = listdir("local/recordings/")
+    elif (folder == "prog"):
+        fileList = listdir("local/programs")
     i = 0
     for fileName in fileList:
         print(i, ". ", fileName, sep='')
         i = i + 1
-    fto = input("Type the number of the PKR you want and press Enter: ") #file to open
+    fto = input("Type the number of the file you want and press Enter: ") #file to open
     return fileList[int(fto)]
 def fileToRec(pkrFileName=""):
     if (pkrFileName):
