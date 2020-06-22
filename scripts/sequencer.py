@@ -1,10 +1,10 @@
 print("\n*!~!* created by Techoholic *!~!*\n")
-from keyboard import record, play
-from mouse import press, release
+from keyboard import record, play, wait
+from mouse import press, release, get_position, click, move
 from time import sleep
 import seqExt
 seqExt.dirInit()
-print("Welcome to version 3.0 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
+print("Welcome to version 3.1 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
     print("b. Playback recorded PKR")
@@ -60,28 +60,28 @@ while True:
             play(pkrToPlay)
     elif (option == 'c'):
         eventArray = []
+        sfEventCount = 0
+        eventCount = 0
         print("\nWecome to the part of sequencer.py where you actually sequence things.")
         openSavedProgram = input("First, do you want to load a saved program from a file? (type y or n): ")
         if (True): #This is to fix the indentation problems
-            if (openSavedProgram == 'y'):
-                sfEventCount = 1
-                fileToOpen = seqExt.chooseFile("prog")
-                file = open("local/programs/" + fileToOpen, 'r')
-                fileAsArray = file.readlines()
-                file.close()
-                counter = 0
-                for event in fileAsArray:
-                    if (counter == 0):
-                        eventAsArray = event.split('=')
-                        loopAmnt = eventAsArray[1]
-                        firstLine = False
-                    else:
-                        eventAsArray = event.split('/')
-                        eventArray.append(seqExt.progEvent(int(eventAsArray[0]), eventAsArray[1], eventAsArray[2], eventAsArray[3]))
-                    counter = counter + 1
-            else:
-                eventCount = 0
-                sfEventCount = 0
+            if (True):
+                if (openSavedProgram == 'y'):
+                    fileToOpen = seqExt.chooseFile("prog")
+                    file = open("local/programs/" + fileToOpen, 'r')
+                    fileAsArray = file.readlines()
+                    file.close()
+                    firstLine = True
+                    for event in fileAsArray:
+                        if (firstLine == True):
+                            eventAsArray = event.split('=')
+                            loopAmnt = eventAsArray[1]
+                            firstLine = False
+                        else:
+                            eventAsArray = event.split('/')
+                            eventArray.append(seqExt.progEvent(int(eventAsArray[0]), eventAsArray[1], eventAsArray[2], eventAsArray[3]))
+                            eventCount = eventCount + 1
+                    sfEventCount = eventCount
                 print("\nTo make a program, all you have to do is choose PKR files to play, add waits in if you want, and set how many times you want to play the program. Then you can save and play!")
                 print("Choose your first event: ")
                 while (option != 'z'):
@@ -110,12 +110,21 @@ while True:
                         eventArray.append(seqExt.progEvent(eventCount, int(playCount), chosenFile, str(eventCount) + ". Play '" + chosenFile + "' " + str(playCount) + " time(s)"))
                         print("Added PKR event!")
                     elif (option == 'x'):
+                        print("\np. Press and hold left click")
+                        print("r. Release left click")
+                        print("s. Click at certain position")
+                        xOption = input("Type p, r, or s and press Enter: ")
                         eventCount = eventCount + 1
-                        pressOrRelease = input("Press (p) or release (r) left click?: ")
-                        if (pressOrRelease == 'p'):
+                        if (xOption == 'p'):
                             eventArray.append(seqExt.progEvent(eventCount, "press", "", str(eventCount) + ". Press and hold left click"))
-                        elif (pressOrRelease == 'r'):
+                        elif (xOption == 'r'):
                             eventArray.append(seqExt.progEvent(eventCount, "release", "", str(eventCount) + ". Release left click"))
+                        elif (xOption == 's'):
+                            print("\nPosition your mouse where you want to click and press '`' (tilde)")
+                            wait('`')
+                            position = str(get_position())
+                            eventArray.append(seqExt.progEvent(eventCount, position, "posClick", str(eventCount) + ". Click at " + position))
+                            print("Added postional click event at coordinates " + position)
                     elif (option == 'y'):
                         if (sfEventCount == 0):
                             nameOfProgram = input("\nWhat would you like to name this program?: ")
@@ -131,32 +140,37 @@ while True:
                                     sfEventCount = sfEventCount + 1
                             file.close()
                             print("\nSuccessfully saved your program to " + nameOfProgram + ".ksp!")
-            if (sfEventCount > 0):
-                print("\nStarting program in 5")
-                seqExt.recPlayCountdown()
-                programIsRunning = True
-                i = 0
-                while (programIsRunning):
-                    i = i + 1
-                    print("\nRunning the program for time " + str(i) + "/" + loopAmnt)
-                    if (int(loopAmnt) == i):
-                        programIsRunning = False
-                    for event in eventArray:
-                        if (event.pkrFile): #If the event is a recEvent
-                            running = True
-                            i2 = 0
-                            while (running):
-                                i2 = i2 + 1
-                                print("Playing '" + event.pkrFile + "' for time " + str(i2) + "/" + str(event.count))
-                                if (i2 == int(event.count)):
-                                    running = False
-                                play(seqExt.fileToRec(event.pkrFile))
-                        elif (event.count == 'press'):
-                            print("Holding down left click")
-                            press(button="left")
-                        elif (event.count == 'release'):
-                            print("Releasing left click")
-                            release(button="left")
-                        else:
-                            print("Waiting for " + str(event.count) + " seconds")
-                            sleep(float(event.count))
+                        if (sfEventCount > 0):
+                            print("\nStarting program in 5")
+                            seqExt.recPlayCountdown()
+                            programIsRunning = True
+                            i = 0
+                            while (programIsRunning):
+                                i = i + 1
+                                print("\nRunning the program for time " + str(i) + "/" + loopAmnt)
+                                if (int(loopAmnt) == i):
+                                    programIsRunning = False
+                                for event in eventArray:
+                                    if (event.pkrFile == "posClick"):
+                                        print("Clicking at " + event.pkrFile)
+                                        posTuple = (int((event.count).split('(')[1].split(',')[0]), int((event.count).split(' ')[1].split(')')[0]))
+                                        move(posTuple[0], posTuple[1])
+                                        click()
+                                    elif (event.pkrFile): #If the event is a recEvent
+                                        running = True
+                                        i2 = 0
+                                        while (running):
+                                            i2 = i2 + 1
+                                            print("Playing '" + event.pkrFile + "' for time " + str(i2) + "/" + str(event.count))
+                                            if (i2 == int(event.count)):
+                                                running = False
+                                            play(seqExt.fileToRec(event.pkrFile))
+                                    elif (event.count == 'press'):
+                                        print("Holding down left click")
+                                        press(button="left")
+                                    elif (event.count == 'release'):
+                                        print("Releasing left click")
+                                        release(button="left")
+                                    else:
+                                        print("Waiting for " + str(event.count) + " seconds")
+                                        sleep(float(event.count))
