@@ -1,10 +1,10 @@
 print("\n*!~!* created by Techoholic *!~!*\n")
-from keyboard import record, play, wait
+from keyboard import record, play, wait, is_pressed
 from mouse import press, release, get_position, click, move
 from time import sleep
 import seqExt
 seqExt.dirInit()
-print("Welcome to version 3.1 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
+print("Welcome to version 3.2 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
 while True:
     print("\na. Record new PKR")
     print("b. Playback recorded PKR")
@@ -111,20 +111,23 @@ while True:
                         print("Added PKR event!")
                     elif (option == 'x'):
                         print("\np. Press and hold left click")
+                        print("q. Left Click")
                         print("r. Release left click")
-                        print("s. Click at certain position")
+                        print("s. Move the cursor to a certain position")
                         xOption = input("Type p, r, or s and press Enter: ")
                         eventCount = eventCount + 1
                         if (xOption == 'p'):
                             eventArray.append(seqExt.progEvent(eventCount, "press", "", str(eventCount) + ". Press and hold left click"))
+                        elif (xOption == 'q'):
+                            eventArray.append(seqExt.progEvent(eventCount, "click", "", str(eventCount) + ". Left-Click"))
                         elif (xOption == 'r'):
                             eventArray.append(seqExt.progEvent(eventCount, "release", "", str(eventCount) + ". Release left click"))
                         elif (xOption == 's'):
-                            print("\nPosition your mouse where you want to click and press '`' (tilde)")
+                            print("\nPosition your mouse cursor where you want it to be moved and press '`' (tilde)")
                             wait('`')
                             position = str(get_position())
-                            eventArray.append(seqExt.progEvent(eventCount, position, "posClick", str(eventCount) + ". Click at " + position))
-                            print("Added postional click event at coordinates " + position)
+                            eventArray.append(seqExt.progEvent(eventCount, position, "posMove", str(eventCount) + ". Click at " + position))
+                            print("Added postional cursor event at coordinates " + position)
                     elif (option == 'y'):
                         if (sfEventCount == 0):
                             nameOfProgram = input("\nWhat would you like to name this program?: ")
@@ -151,11 +154,10 @@ while True:
                                 if (int(loopAmnt) == i):
                                     programIsRunning = False
                                 for event in eventArray:
-                                    if (event.pkrFile == "posClick"):
-                                        print("Clicking at " + event.pkrFile)
+                                    if (event.pkrFile == "posMove"):
+                                        print("Moving cursor to " + event.count)
                                         posTuple = (int((event.count).split('(')[1].split(',')[0]), int((event.count).split(' ')[1].split(')')[0]))
-                                        move(posTuple[0], posTuple[1])
-                                        click()
+                                        move(posTuple[0], posTuple[1], 1)
                                     elif (event.pkrFile): #If the event is a recEvent
                                         running = True
                                         i2 = 0
@@ -168,9 +170,14 @@ while True:
                                     elif (event.count == 'press'):
                                         print("Holding down left click")
                                         press(button="left")
+                                    elif (event.count == 'click'):
+                                        print("Left-Clicking")
+                                        click()
                                     elif (event.count == 'release'):
                                         print("Releasing left click")
                                         release(button="left")
                                     else:
                                         print("Waiting for " + str(event.count) + " seconds")
                                         sleep(float(event.count))
+                                if (is_pressed('`')):
+                                    programIsRunning = False
