@@ -1,4 +1,4 @@
-# bss version 3.1
+# bss version 3.2
 **RUNNING THE PYTHON SCRIPTS REQUIRE PYTHON 3! Also, this project wouldn't be possible without boppreh's keyboard & mouse libraries ;)**
 
 Hey guys, Techoholic here! Welcome to my repository for scripts that help you progress AFK in various games (made for Onett's Bee Swarm Simulator on Roblox). All it does record keypresses and play them back in customizable ways. For example, you could record yourself collecting honey from a field, returning to your hive to make honey, and then going back to the field to repeat the process. 
