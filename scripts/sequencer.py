@@ -1,19 +1,24 @@
 print("\n*!~!* created by Techoholic *!~!*\n")
 from keyboard import record, play, wait, is_pressed
-from mouse import press, release, get_position, click, move
-from time import sleep
+import mouse
+from time import sleep, time
+from subprocess import Popen, PIPE, STDOUT
+from os import path
+from sys import executable
 import seqExt
 seqExt.dirInit()
-print("Welcome to version 3.2 of the Sequencer! This script can record, playback, and most importantly, sequence keypress recordings called Python Keyboard Recordings (.pkr files).")
+print("Welcome to version 4.0 of the Sequencer! This script can record, playback, and most importantly, sequence recordings of key presses and mouse movements for games, repetitive tasks, and whatever else you can think of.")
 while True:
-    print("\na. Record new PKR")
-    print("b. Playback recorded PKR")
-    print("c. Sequence the PKRs")
-    option = input("Type a, b, or c and press Enter: ")
+    print("\na. Record new PKR (Python keypress recording)")
+    print("b. Record new PMR (Python mouse recording)")
+    print("c. Record new KMR (keyboard & mouse recording)")
+    print("d. Playback saved recording")
+    print("e. Sequence the recordings (and add waits, repeats, etc)")
+    option = input("Type a, b, c, d, or e and press Enter: ")
     if (option == 'a'):
-        print("\nRecording will start in 5")
+        print("\nThe script will start recording your keypresses in 5")
         seqExt.recPlayCountdown()
-        print("Recording session started. Press ` in any application to stop")
+        print("Your keypresses are now being recorded. Press ` in any application to stop.")
         pkr = record(until='`')
         print("\nRecording session ended. What do you want to do now?")
         option = ''
@@ -26,7 +31,7 @@ while True:
             print("j. Save the recording as a file to be accessed later")
             print("k. Discard the recording and start a new one")
             print("l. Return to main menu")
-            option = input("Type i, j, k, or l and then press enter: ")
+            option = input("Type i, j, k, or l and then press Enter: ")
             if (option == 'i'):
                 loop = input("\nDo you want to play the recording on loop? (y/n): ")
                 running = True
@@ -39,26 +44,185 @@ while True:
                     play(pkr)
             elif (option == 'j'):
                 fileName = input("\nWhat do you want to name this PKR?: ")
-                seqExt.recToFile(pkr, "local/recordings/" + fileName + ".pkr")
+                seqExt.PKRtoFile(pkr, "local/recordings/" + fileName + ".pkr")
                 print("Successfully saved recording to " + fileName + ".pkr!")
             elif (option == 'k'):
-                print("\nRecording will start in 5")
+                print("\The script will start recording your kepresses at in 5")
                 seqExt.recPlayCountdown()
-                print("Recording session started. Press ` to stop")
+                print("Your kepresses are now being recorded. Press ` in any application to stop.")
                 pkr = record(until='`')
                 print("\nRecording session ended. What do you want to do now?")
     elif (option == 'b'):
-        pkrToPlay = seqExt.fileToRec()
-        loop = input("\nDo you want to play the recording on loop? (y/n): ")
-        running = True
-        print("Playing the PKR in 5")
+        print("\nThe script will start recording your mouse movements, scrolls, and clicks in 5")
         seqExt.recPlayCountdown()
-        print("Playing recording")
-        while (running):
-            if (loop != 'y'):
-                running = False
-            play(pkrToPlay)
+        print("Your mouse is now being recorded. Press Middle Click in any application to stop.")
+        pmr = mouse.record(button="middle")
+        print("\nRecording session ended. What do you want to do now?")
+        option = ''
+        firstTime = True
+        while (option != 'l'):
+            if (firstTime == False and option != 'k'):
+                print("\nWhat now?")
+            firstTime = False
+            print("i. Playback the recording")
+            print("j. Save the recording as a file to be accessed later")
+            print("k. Discard the recording and start a new one")
+            print("l. Return to main menu")
+            option = input("Type i, j, k, or l and the press Enter: ")
+            if (option == 'i'):
+                loop = input("\n Do you want to play the recording on loop? (y/n): ")
+                running = True
+                print("Playing the PMR in 5")
+                seqExt.recPlayCountdown()
+                print("Playing recording")
+                while (running):
+                    if (loop != 'y'):
+                        running = False
+                    mouse.play(pmr)
+            elif (option == 'j'):
+                fileName = input("\nWhat do you want to name this PMR?: ")
+                seqExt.PMRtoFile(pmr, "local/recordings/" + fileName + ".pmr")
+                print("Successfully saved recording to " + fileName + ".pmr!")
+            elif (option == 'k'):
+                print("\nThe script will start recording your mouse movements, clicks, and scrolls in 5")
+                seqExt.recPlayCountdown()
+                print("Your kepresses are now being recorded. Press ` in any application to stop.")
+                pmr = mouse.record(button="middle")
+                print("\nRecording session ended. What do you want to do now?")
     elif (option == 'c'):
+        file = open("local/sync.sqs", 'w')
+        file.write(str(time() + 5))
+        file.close()
+        bgMouseRec = Popen([executable, path.abspath("scripts/bgMouseRec.py")], stdout=PIPE, stderr=STDOUT)
+        confirmation = False
+        print("\nThe script will start recording your keyboard AND mouse in 5")
+        sleep(1)
+        for i in range(4, 0, -1):
+            if confirmation == False:
+                file = open("local/sync.sqs", 'r')
+                lines = file.readlines()
+                file.close()
+                if len(lines) == 2:
+                    confirmation = True
+            print(i)
+            sleep(1)
+        if confirmation:
+            print("\nYour keyboard and mouse are now being recorded. Press Tilde AND Middle Click to stop.")
+            pkr = record(until='`')
+            print("\nRecording session ended. What do you want to do now?")
+            option = ''
+            firstTime = True
+            while (option != 'l'):
+                if (firstTime == False and option != 'k'):
+                    print("\nWhat now?")
+                firstTime = False
+                print("i. Playback the recording")
+                print("j. Save the recording as a file to be accessed later")
+                print("k. Discard the recording and start a new one (DOESN'T WORK YET)")
+                print("l. Return to main menu")
+                option = input("Type i, j, k, or l and then press Enter: ")
+                if (option == 'i'):
+                    loop = input("\nDo you want to play the recording on loop? (y/n): ")
+                    running = True
+                    print("Playing the KMR in 5")
+                    seqExt.recPlayCountdown()
+                    print("Playing recording")
+                    while (running):
+                        if (loop != 'y'):
+                            running = False
+                        play(pkr)
+                        """OTHER STUFF HERE"""
+                elif (option == 'j'):
+                    fileName = input("\nWhat do you want to name this KMR?: ")
+                    print("Saving...")
+                    seqExt.PKRtoFile(pkr, "local/recordings/" + fileName + ".kmr")
+                    file = open("local/sync.sqs", 'a')
+                    file.write("\n" + fileName + ".kmr")
+                    file.close()
+                    attemptingToSave = True
+                    pmrSaved = False
+                    triesLeft = 5
+                    while attemptingToSave:
+                        file = open("local/sync.sqs", 'r')
+                        lines = file.readlines()
+                        file.close()
+                        if len(lines) == 4:
+                            pmrSaved = True
+                        triesLeft = triesLeft - 1
+                        if triesLeft == 0:
+                            attemptingToSave = False
+                        sleep(1)
+                    if pmrSaved:
+                        print("Successfully saved recording to " + fileName + ".kmr!")
+                    else:
+                        print("The keyboard recording has been saved but the mouse recording wasn't because 'bgMouse.py' isn't running. To run the script manually, go to the 'local' folder and run 'bgMouse.bat', then return to this program and try recording again.")
+                elif (option == 'k'):
+                    print("\nThe script will start recording your kepresses at in 5")
+                    seqExt.recPlayCountdown()
+                    print("Your kepresses are now being recorded. Press ` in any application to stop.")
+                    pkr = record(until='`')
+                    print("\nRecording session ended. What do you want to do now?")
+        else:
+            file = open("local/sync.sqs", 'w')
+            file.write("")
+            file.close()
+            print("\nIt appears something is awry with the script that is supposed to run in the background to record the mouse. To run the script manually, go to the 'local' folder and run 'bgMouse.bat', then return to this program and try again.")
+    elif (option == 'd'):
+        fileName = seqExt.chooseFile()
+        fileNameLines = fileName.split('.')
+        if fileNameLines[len(fileNameLines)-1] == "pkr":
+            PKRtoPlay = seqExt.PKRtoRec(fileName)
+            loop = input("\nDo you want to play the recording on loop? (y/n): ")
+            running = True
+            print("Playing the PKR in 5")
+            seqExt.recPlayCountdown()
+            print("Playing recording")
+            while (running):
+                if (loop != 'y'):
+                    running = False
+                play(PKRtoPlay)
+        elif fileNameLines[len(fileNameLines)-1] == "pmr":
+            PMRtoPlay = seqExt.PMRtoRec(fileName)
+            loop = input("\nDo you want to play the recording on loop? (y/n): ")
+            running = True
+            print("Playing the PMR in 5")
+            seqExt.recPlayCountdown()
+            print("Playing recording")
+            while (running):
+                if (loop != 'y'):
+                    running = False
+                mouse.play(PMRtoPlay)
+        elif fileNameLines[len(fileNameLines)-1] == "kmr":
+            print("\nConverting file to playable recording...")
+            PKRtoPlay = seqExt.KMRtoRec(fileName, "pkr")
+            file = open("local/sync.sqs", 'w')
+            file.write(fileName)
+            file.close()
+            bgMousePlay = Popen([executable, path.abspath("scripts/bgMousePlay.py")], stdout=PIPE, stderr=STDOUT)
+            print("Playing the KMR in about 5 seconds...")
+            waitingForTime = True
+            secondsToWait = 5
+            while waitingForTime:
+                file = open("local/sync.sqs", 'r')
+                fileLines = file.readlines()
+                file.close()
+                if len(fileLines) == 2:
+                    waitingForTime = False
+                    waitingToPlay = True
+                elif secondsToWait == 0:
+                    waitingForTime = False
+                    waitingToPlay = False
+                else:
+                    sleep(1)
+                    secondsToWait = secondsToWait - 1
+            if waitingToPlay == False:
+                print("It appears that something is awry with the script that needs to run in the background for the mouse to be simulated. Poop.")
+            while waitingToPlay:
+                if float(fileLines[1]) <= time():
+                    print("Playing the KMR")
+                    play(PKRtoPlay)
+                    waitingToPlay = False
+    elif (option == 'e'):
         eventArray = []
         sfEventCount = 0
         eventCount = 0
@@ -166,7 +330,7 @@ while True:
                                             print("Playing '" + event.pkrFile + "' for time " + str(i2) + "/" + str(event.count))
                                             if (i2 == int(event.count)):
                                                 running = False
-                                            play(seqExt.fileToRec(event.pkrFile))
+                                            play(seqExt.PKRtoRec(event.pkrFile))
                                     elif (event.count == 'press'):
                                         print("Holding down left click")
                                         press(button="left")

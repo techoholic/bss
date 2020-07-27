@@ -1,0 +1,10 @@
+~modify keyboard and mouse libraries so they only have the functions I need
+~fix line spacing throughout the program
+~implement error handling
+~make a GUI or compile this into an executable
+~think of a more descriptive name
+~make .pkr and other files smaller and fix weird naming of attributes (event.count -> event.data)
+~modify the libraries to stop recording the mouse when a different event happens
+~modify the libraries so there is no need for s second script
+~interact with the background script through Popen/this script instead of sync.sqs
+~add keymapper to remap keys to certain characters / also possibly switch between reading the characters and reading the keys?
