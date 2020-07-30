@@ -333,13 +333,13 @@ while True:
                                             play(seqExt.PKRtoRec(event.pkrFile))
                                     elif (event.count == 'press'):
                                         print("Holding down left click")
-                                        press(button="left")
+                                        mouse.press(button="left")
                                     elif (event.count == 'click'):
                                         print("Left-Clicking")
                                         click()
                                     elif (event.count == 'release'):
                                         print("Releasing left click")
-                                        release(button="left")
+                                        mouse.release(button="left")
                                     else:
                                         print("Waiting for " + str(event.count) + " seconds")
                                         sleep(float(event.count))
