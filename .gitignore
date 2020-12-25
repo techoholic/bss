@@ -1,3 +1,5 @@
 local/
 __pycache__/
 Image Recognition/
+scripts/compiled/
+prompt.bat
