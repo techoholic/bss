@@ -160,10 +160,10 @@ while option != 'f':
                     if line[0] == 'W':
                         events.append(seqExt.waitEvent(float(line[1])))
                     elif line[0] == 'R':
-                        events.append(seqExt.recEvent(line[1], int(line[2])))
+                        events.append(seqExt.recEvent(line[1], int(float(line[2]))))
                     elif line[0] == 'M':
                         posAsTuple = ()
-                        if line[2] != '\n': posAsTuple = (int(line[2].split('(')[1].split(',')[0]), int(line[2].split(',')[1].split(')')[0]))
+                        if line[2] != "()\n": posAsTuple = (int(line[2].split('(')[1].split(',')[0]), int(line[2].split(',')[1].split(')')[0]))
                         events.append(seqExt.mouseEvent(line[1], posAsTuple))
             sfEventCount = len(events)
         else:
